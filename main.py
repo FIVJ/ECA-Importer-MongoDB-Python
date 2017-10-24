@@ -32,9 +32,31 @@ def main():
             csv_f = csv.reader(f, delimiter='\t')
             for row in enumerate(csv_f):
                if imports!=0:         
-                  state = row[1][0]
+                  state = row[1][0].upper()
                   siafi = row[1][1]
-                  city = row[1][2]
+                  city = row[1][2].upper()
+                  nis = row [1][7]
+                  beneficiary = row[1][8].upper()
+                  action = row[1][6]
+                  nfile = filename.upper()
+                  function = row[1][3]
+                  month = filename[4:6]
+                  program = row[1][5]
+                  source = row[1][9].upper()
+                  subfunction = row[1][4]
+                  year = filename[0:4]
+                  value = row[1][10]
+                  
+                  if (state == 'MG' or state == 'RJ' or state == 'SP' or state == 'ES'):
+                     region = 'SUDESTE'
+                  elif (state == 'RS' or state == 'PR' or state == 'SC'):
+                     region = 'SUL'   
+                  elif (state == 'GO' or state == 'DF' or state == 'MT' or state == 'MS'):
+                     region = 'CENTRO-OESTE'
+                  elif (state == 'AC' or state == 'AM' or state == 'RO' or state == 'RR' or state == 'TO'):
+                     region = 'NORTE'
+                  else:
+                     region = 'NORDESTE' 
             
                   rCity = db.Cities.find({ "Siafi": siafi})
                   if rCity.count() is 0:
@@ -45,6 +67,34 @@ def main():
                      }
                      db.Cities.insert(cities)
                   
+                  rBeneficiaries = db.Beneficiaries.find({ "NIS": nis})
+                  if rBeneficiaries.count() is 0:
+                     beneficiaries = {
+                     "NIS": nis,
+                     "Beneficiary": beneficiary
+                     }
+                     db.Beneficiaries.insert(beneficiaries)
+                  
+                  payments = {
+                  "Action": action,
+                  "File": nfile,
+                  "Function": function,
+                  "Month": month,
+                  "NIS": nis,
+                  "Beneficiary": beneficiary,
+                  "Program": program,
+                  "Siafi": siafi,
+                  "City": city,
+                  "State": state,
+                  "Region": region,
+                  "Source": source,
+                  "SubFunction": subfunction,
+                  "Year": year,
+                  "Value": value
+                  }
+
+                  db.Payments.insert(payments)
+                  
                   if imports % 1000 == 0:
                      print("Lines Imports: {} ".format(imports))
                      
@@ -52,7 +102,6 @@ def main():
          path.close()
    
    timer.stop()
-   print('\nOption: {}\n'.format(sys.argv[2]))
    print("Total time: " + str( timer.get_time() ) +" s")
    print("Average time: " + str( timer.get_time("average","seg") ) +" s")
    print("Last call: " + str( timer.get_time("last")) +" s")
