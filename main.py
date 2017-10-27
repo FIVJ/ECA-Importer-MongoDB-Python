@@ -58,6 +58,15 @@ def main():
                      region = 'NORTE'
                   else:
                      region = 'NORDESTE'
+
+                  '''rCity = db.Cities.find({"Siafi": siafi})
+                  if rCity.count() is 0:
+                     cities = {
+                        "State": state,
+                        "Siafi": siafi,
+                        "City": city
+                     }
+                     db.Cities.insert(cities)'''
                   
                   rBeneficiaries = db.Beneficiaries.find({ "NIS": nis})
                   if rBeneficiaries.count() is 0:
