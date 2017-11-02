@@ -2,7 +2,6 @@
 
 import pymongo
 from pymongo.errors import ConnectionFailure
-
 import CPUtimer
 import os
 import csv
@@ -30,7 +29,7 @@ def main():
        path = os.path.join(instance_path, filename)
        imports=0
        with codecs.open(path,'r', 'ISO-8859-1') as f:
-            csv_f = csv.reader(f, delimiter='\t')
+            csv_f = csv.reader((line.replace('\0','') for line in f), delimiter='\t')
             for row in enumerate(csv_f):
                if imports!=0:         
                   state = row[1][0].upper()
@@ -47,7 +46,7 @@ def main():
                   subfunction = row[1][4]
                   year = filename[0:4]
                   value = row[1][10]
-                  
+
                   if (state == 'MG' or state == 'RJ' or state == 'SP' or state == 'ES'):
                      region = 'SUDESTE'
                   elif (state == 'RS' or state == 'PR' or state == 'SC'):
@@ -59,14 +58,14 @@ def main():
                   else:
                      region = 'NORDESTE'
 
-                  '''rCity = db.Cities.find({"Siafi": siafi})
+                  rCity = db.Cities.find({"Siafi": siafi})
                   if rCity.count() is 0:
                      cities = {
                         "State": state,
                         "Siafi": siafi,
                         "City": city
                      }
-                     db.Cities.insert(cities)'''
+                     db.Cities.insert(cities)
                   
                   rBeneficiaries = db.Beneficiaries.find({ "NIS": nis})
                   if rBeneficiaries.count() is 0:
@@ -76,7 +75,7 @@ def main():
                      }
                      db.Beneficiaries.insert(beneficiaries)
                   
-                  '''payments = {
+                  payments = {
                   "Action": action,
                   "File": nfile,
                   "Function": function,
@@ -94,13 +93,13 @@ def main():
                   "Value": value
                   }
 
-                  db.Payments.insert(payments)'''
+                  db.Payments.insert(payments)
                   
                   if imports % 10000 == 0:
                      print("Lines Imports: {} ".format(imports))
                      
                imports+=1
-            timer.reset()
+            timer.lap()
    timer.stop()
    print("Total time: " + str(timer.get_time()) +" s")
    print("Average time: " + str(timer.get_time("average","m")) +" min")
