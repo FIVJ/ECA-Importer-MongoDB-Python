@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import pymongo
 from pymongo.errors import ConnectionFailure
 import CPUtimer
@@ -20,7 +19,7 @@ def main():
 
     db = db_conn["DB_ECA"]
 
-    instance_path = "/Users/tassio/PycharmProjects/ECA-Importer-MongoDB-Python/CSV/Pagamentos"
+    instance_path = "/Users/tassio/PycharmProjects/ECA-Importer-MongoDB-Python/CSV"
 
     file_list = [f for f in os.listdir(instance_path)
     if f.startswith('201') and f.endswith('.csv')]
@@ -31,11 +30,11 @@ def main():
         with codecs.open(path,'r', 'ISO-8859-1') as f:
             csv_f = csv.reader((line.replace('\0','') for line in f), delimiter='\t')
             for row in enumerate(csv_f):
-                if imports!=0:
+                if imports != 0:
                     state = row[1][0].upper()
                     siafi = row[1][1]
                     city = row[1][2].upper()
-                    nis = row [1][7]
+                    nis = row[1][7]
                     beneficiary = row[1][8].upper()
                     action = row[1][6]
                     nfile = filename.upper()
@@ -61,19 +60,22 @@ def main():
                     rCity = db.Cities.find({"Siafi": siafi})
                     if rCity.count() is 0:
                         cities = {
+                            "Region": region,
                             "State": state,
                             "Siafi": siafi,
                             "City": city
                         }
                         db.Cities.insert(cities)'''
 
-                    '''rBeneficiaries = db.Beneficiaries.find({ "NIS": nis})
-                    if rBeneficiaries.count() is 0:
+                    if db.Beneficiaries.find({'NIS': nis}).count() is 0:
                         beneficiaries = {
                             "NIS": nis,
                             "Beneficiary": beneficiary
                         }
-                        db.Beneficiaries.insert(beneficiaries)'''
+                        try:
+                            db.Beneficiaries.insert(beneficiaries)
+                        except pymongo.errors.DuplicateKeyError:
+                            print(nis)
 
                     '''payments = {
                         "Action": action,
@@ -82,7 +84,7 @@ def main():
                         "Month": month,
                         "NIS": nis,
                         "Beneficiary": beneficiary,
-                        "Program": program,
+                        "Program": program,''
                         "Siafi": siafi,
                         "City": city,
                         "State": state,
