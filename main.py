@@ -12,6 +12,8 @@ def main():
     timer.reset()
     timer.start()
     try:
+        '''uri = "mongodb://user:passwd@server/?authSource=dbname"
+        db_conn = pymongo.MongoClient(uri)'''
         db_conn = pymongo.MongoClient('localhost:27017')
         print("Connected to MongoDB successfully!\n")
     except pymongo.errors.ConnectionFailure as e:
@@ -46,7 +48,7 @@ def main():
                     year = filename[0:4]
                     value = row[1][10]
 
-                    '''if (state == 'MG' or state == 'RJ' or state == 'SP' or state == 'ES'):
+                    if (state == 'MG' or state == 'RJ' or state == 'SP' or state == 'ES'):
                         region = 'SUDESTE'
                     elif (state == 'RS' or state == 'PR' or state == 'SC'):
                         region = 'SUL'    
@@ -65,7 +67,7 @@ def main():
                             "Siafi": siafi,
                             "City": city
                         }
-                        db.Cities.insert(cities)'''
+                        db.Cities.insert(cities)
 
                     if db.Beneficiaries.find({'NIS': nis}).count() is 0:
                         beneficiaries = {
@@ -77,7 +79,7 @@ def main():
                         except pymongo.errors.DuplicateKeyError:
                             print(nis)
 
-                    '''payments = {
+                    payments = {
                         "Action": action,
                         "File": nfile,
                         "Function": function,
@@ -95,7 +97,7 @@ def main():
                         "Value": value
                         }
 
-                        db.Payments.insert(payments)'''
+                    db.Payments.insert(payments)
 
                 if imports % 10000 == 0:
                     print("Lines Imports: {} ".format(imports))
